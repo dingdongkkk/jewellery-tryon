@@ -1,0 +1,12 @@
+.venv
+data
+frontend/node_modules
+frontend/dist
+backend/.env
+**/__pycache__
+test-results
+test-photos
+scratch
+output
+.playwright-cli
+.git

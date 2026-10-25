@@ -1,0 +1,231 @@
+[
+ {
+  "photo": "01-front-bw-lowkey",
+  "status": "complete",
+  "pieces": [
+   {
+    "piece": 0,
+    "mode": "AI image"
+   },
+   {
+    "piece": 1,
+    "mode": "AI image"
+   }
+  ],
+  "note": null,
+  "checks": [],
+  "image": "/Users/onlyanubhav/Wearable App/jewellery/test-results/regression/01-front-bw-lowkey.png"
+ },
+ {
+  "photo": "03-hair-covering-ears",
+  "status": "complete",
+  "pieces": [
+   {
+    "piece": 0,
+    "mode": "AI image"
+   },
+   {
+    "piece": 1,
+    "mode": "AI image"
+   }
+  ],
+  "note": null,
+  "checks": [],
+  "image": "/Users/onlyanubhav/Wearable App/jewellery/test-results/regression/03-hair-covering-ears.png"
+ },
+ {
+  "photo": "04-candid-indoor-short-hair",
+  "status": "complete",
+  "pieces": [
+   {
+    "piece": 0,
+    "mode": "AI image"
+   }
+  ],
+  "note": null,
+  "checks": [],
+  "image": "/Users/onlyanubhav/Wearable App/jewellery/test-results/regression/04-candid-indoor-short-hair.png"
+ },
+ {
+  "photo": "06-profile-looking-up-studio",
+  "status": "complete",
+  "pieces": [
+   {
+    "piece": 0,
+    "mode": "AI image"
+   }
+  ],
+  "note": null,
+  "checks": [],
+  "image": "/Users/onlyanubhav/Wearable App/jewellery/test-results/regression/06-profile-looking-up-studio.png"
+ },
+ {
+  "photo": "07-three-quarter-outdoor-curly",
+  "status": "complete",
+  "pieces": [
+   {
+    "piece": 0,
+    "mode": "AI image"
+   }
+  ],
+  "note": null,
+  "checks": [],
+  "image": "/Users/onlyanubhav/Wearable App/jewellery/test-results/regression/07-three-quarter-outdoor-curly.png"
+ },
+ {
+  "photo": "11-smiling-already-wearing-hoops",
+  "status": "complete",
+  "pieces": [
+   {
+    "piece": 0,
+    "mode": "AI image"
+   },
+   {
+    "piece": 1,
+    "mode": "AI image"
+   }
+  ],
+  "note": null,
+  "checks": [],
+  "image": "/Users/onlyanubhav/Wearable App/jewellery/test-results/regression/11-smiling-already-wearing-hoops.png"
+ },
+ {
+  "photo": "13-warm-beauty-hand-face",
+  "status": "complete",
+  "pieces": [
+   {
+    "piece": 0,
+    "mode": "AI image"
+   }
+  ],
+  "note": null,
+  "checks": [],
+  "image": "/Users/onlyanubhav/Wearable App/jewellery/test-results/regression/13-warm-beauty-hand-face.png"
+ },
+ {
+  "photo": "14-bw-off-shoulder-pendant",
+  "status": "complete",
+  "pieces": [
+   {
+    "piece": 0,
+    "mode": "AI image"
+   }
+  ],
+  "note": null,
+  "checks": [],
+  "image": "/Users/onlyanubhav/Wearable App/jewellery/test-results/regression/14-bw-off-shoulder-pendant.png"
+ },
+ {
+  "photo": "15-window-light-moody",
+  "status": "complete",
+  "pieces": [
+   {
+    "piece": 0,
+    "mode": "AI image"
+   }
+  ],
+  "note": null,
+  "checks": [],
+  "image": "/Users/onlyanubhav/Wearable App/jewellery/test-results/regression/15-window-light-moody.png"
+ },
+ {
+  "photo": "16-hands-holding-brushes-ring",
+  "status": "complete",
+  "pieces": [
+   {
+    "piece": 0,
+    "mode": "AI image"
+   }
+  ],
+  "note": null,
+  "checks": [],
+  "image": "/Users/onlyanubhav/Wearable App/jewellery/test-results/regression/16-hands-holding-brushes-ring.png"
+ },
+ {
+  "photo": "02-profile-bw-hair",
+  "status": "complete",
+  "pieces": [
+   {
+    "piece": 0,
+    "mode": "AI image"
+   }
+  ],
+  "note": null,
+  "checks": [],
+  "image": "/Users/onlyanubhav/Wearable App/jewellery/test-results/regression/02-profile-bw-hair.png"
+ },
+ {
+  "photo": "08-profile-lowkey-black",
+  "status": "complete",
+  "pieces": [
+   {
+    "piece": 0,
+    "mode": "AI image"
+   }
+  ],
+  "note": null,
+  "checks": [],
+  "image": "/Users/onlyanubhav/Wearable App/jewellery/test-results/regression/08-profile-lowkey-black.png"
+ },
+ {
+  "photo": "09-looking-down-blonde",
+  "status": "complete",
+  "pieces": [
+   {
+    "piece": 0,
+    "mode": "AI image"
+   }
+  ],
+  "note": null,
+  "checks": [],
+  "image": "/Users/onlyanubhav/Wearable App/jewellery/test-results/regression/09-looking-down-blonde.png"
+ },
+ {
+  "photo": "10-profile-hat-outdoor",
+  "status": "complete",
+  "pieces": [
+   {
+    "piece": 0,
+    "mode": "AI image"
+   }
+  ],
+  "note": null,
+  "checks": [],
+  "image": "/Users/onlyanubhav/Wearable App/jewellery/test-results/regression/10-profile-hat-outdoor.png"
+ },
+ {
+  "photo": "12-golden-backlight-tilted",
+  "status": "complete",
+  "pieces": [
+   {
+    "piece": 0,
+    "mode": "AI image"
+   },
+   {
+    "piece": 1,
+    "mode": "AI image"
+   }
+  ],
+  "note": null,
+  "checks": [],
+  "image": "/Users/onlyanubhav/Wearable App/jewellery/test-results/regression/12-golden-backlight-tilted.png"
+ },
+ {
+  "photo": "05-looking-down-warm-dark",
+  "status": "failed",
+  "error": "no more saved AI images"
+ },
+ {
+  "photo": "17-hands-makeup-ring",
+  "status": "complete",
+  "pieces": [
+   {
+    "piece": 0,
+    "mode": "AI image"
+   }
+  ],
+  "note": null,
+  "checks": [],
+  "image": "/Users/onlyanubhav/Wearable App/jewellery/test-results/regression/17-hands-makeup-ring.png"
+ }
+]

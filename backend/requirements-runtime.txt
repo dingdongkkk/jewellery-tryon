@@ -1,0 +1,11 @@
+# What the deployed server needs (no torch: the product catalogue ships already prepared in catalog/prepared/)
+fastapi==0.162.0
+uvicorn==0.54.0
+python-multipart==0.0.32
+pillow==13.0.0
+opencv-python-headless==5.0.0.93
+numpy==2.5.4
+gradio_client==2.7.2
+python-dotenv==1.2.4
+mediapipe==1.1.1
+fal-client==1.0.3

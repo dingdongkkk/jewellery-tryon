@@ -1,0 +1,510 @@
+[
+ {
+  "photo": "01-front-bw-lowkey",
+  "product": "ear-pearl-enamel",
+  "upload_id": "up_36eb9cace08a",
+  "detected": {
+   "ears": [
+    "right ear",
+    "left ear"
+   ],
+   "yaw_deg": 8.2,
+   "view": "front",
+   "px_per_mm": 6.114,
+   "face_height_px": 848
+  },
+  "job_id": "job_bef8ecb02ca9",
+  "status": "failed",
+  "error": "The AI couldn't put the piece on this photo (the AI changed the person's pose or framing in every attempt). Press Generate again, or try a clearer photo.",
+  "seconds": 18.2,
+  "attempts": null,
+  "pieces": null,
+  "note": null
+ },
+ {
+  "photo": "03-hair-covering-ears",
+  "product": "ear-garnet-cones",
+  "upload_id": "up_fcc6a4849f08",
+  "detected": {
+   "ears": [
+    "right ear",
+    "left ear"
+   ],
+   "yaw_deg": 2.5,
+   "view": "front",
+   "px_per_mm": 5.454,
+   "face_height_px": 838
+  },
+  "job_id": "job_91c83d1f3c9a",
+  "status": "failed",
+  "error": "The AI couldn't put the piece on this photo (the AI changed the person's pose or framing in every attempt). Press Generate again, or try a clearer photo.",
+  "seconds": 16.1,
+  "attempts": null,
+  "pieces": null,
+  "note": null
+ },
+ {
+  "photo": "04-candid-indoor-short-hair",
+  "product": "ear-pearl-enamel",
+  "upload_id": "up_6e61bb34d541",
+  "detected": {
+   "ears": [
+    "left ear"
+   ],
+   "yaw_deg": -31.2,
+   "view": "profile",
+   "px_per_mm": 2.169,
+   "face_height_px": 322
+  },
+  "job_id": "job_ba2dd46ff9a0",
+  "status": "complete",
+  "error": null,
+  "seconds": 18.1,
+  "attempts": [
+   {
+    "seed": 994981074,
+    "edge_alignment": 0.851,
+    "scale": 1.0,
+    "rotation": -0.008,
+    "shift": 0.001
+   }
+  ],
+  "pieces": [
+   {
+    "piece": 0,
+    "mode": "AI image"
+   }
+  ],
+  "note": null
+ },
+ {
+  "photo": "06-profile-looking-up-studio",
+  "product": "ear-garnet-cones",
+  "upload_id": "up_9c5c55596905",
+  "detected": {
+   "ears": [
+    "right ear"
+   ],
+   "yaw_deg": 40.4,
+   "view": "profile",
+   "px_per_mm": 1.362,
+   "face_height_px": 278
+  },
+  "job_id": "job_d98401b9b7b7",
+  "status": "complete",
+  "error": null,
+  "seconds": 17.1,
+  "attempts": [
+   {
+    "seed": 184666696,
+    "edge_alignment": 0.891,
+    "scale": 1.0,
+    "rotation": 0.006,
+    "shift": 0.0
+   }
+  ],
+  "pieces": [
+   {
+    "piece": 0,
+    "mode": "AI image"
+   }
+  ],
+  "note": null
+ },
+ {
+  "photo": "07-three-quarter-outdoor-curly",
+  "product": "ear-granulated-hoop",
+  "upload_id": "up_2bad8acf99cc",
+  "detected": {
+   "ears": [
+    "right ear"
+   ],
+   "yaw_deg": 59.5,
+   "view": "profile",
+   "px_per_mm": 1.701,
+   "face_height_px": 328
+  },
+  "job_id": "job_137f39dce67d",
+  "status": "failed",
+  "error": "The AI couldn't put the piece on this photo (the AI changed the person's pose or framing in every attempt). Press Generate again, or try a clearer photo.",
+  "seconds": 16.1,
+  "attempts": null,
+  "pieces": null,
+  "note": null
+ },
+ {
+  "photo": "11-smiling-already-wearing-hoops",
+  "product": "ear-granulated-hoop",
+  "upload_id": "up_b5b16dae9c5e",
+  "detected": {
+   "ears": [
+    "right ear",
+    "left ear"
+   ],
+   "yaw_deg": -2.6,
+   "view": "front",
+   "px_per_mm": 2.546,
+   "face_height_px": 397
+  },
+  "job_id": "job_344cb9d52c12",
+  "status": "failed",
+  "error": "The AI couldn't put the piece on this photo (the AI changed the person's pose or framing in every attempt). Press Generate again, or try a clearer photo.",
+  "seconds": 18.2,
+  "attempts": null,
+  "pieces": null,
+  "note": null
+ },
+ {
+  "photo": "13-warm-beauty-hand-face",
+  "product": "ear-garnet-cones",
+  "upload_id": "up_e88ecee5a36c",
+  "detected": {
+   "ears": [
+    "right ear",
+    "left ear"
+   ],
+   "yaw_deg": 19.7,
+   "view": "front",
+   "px_per_mm": 2.931,
+   "face_height_px": 430
+  },
+  "job_id": "job_7c2903d82586",
+  "status": "complete",
+  "error": null,
+  "seconds": 16.2,
+  "attempts": [
+   {
+    "seed": 1741734455,
+    "edge_alignment": 0.904,
+    "scale": 1.0,
+    "rotation": 0.045,
+    "shift": 0.001
+   }
+  ],
+  "pieces": [
+   {
+    "piece": 0,
+    "mode": "AI image"
+   }
+  ],
+  "note": null
+ },
+ {
+  "photo": "14-bw-off-shoulder-pendant",
+  "product": "pend-mistress-animals",
+  "upload_id": "up_5ea724f8b84f",
+  "detected": {
+   "neck_base": [
+    473.8999938964844,
+    851.0
+   ],
+   "px_per_mm": 1.128
+  },
+  "job_id": "job_ed14561bf7a7",
+  "status": "complete",
+  "error": null,
+  "seconds": 15.1,
+  "attempts": [
+   {
+    "seed": 738372407,
+    "edge_alignment": 0.957,
+    "scale": 1.0,
+    "rotation": 0.007,
+    "shift": 0.0
+   }
+  ],
+  "pieces": [
+   {
+    "piece": 0,
+    "mode": "AI image"
+   }
+  ],
+  "note": null
+ },
+ {
+  "photo": "15-window-light-moody",
+  "product": "pend-filigree-cross",
+  "upload_id": "up_a2f57d36cf59",
+  "detected": {
+   "neck_base": [
+    481.8999938964844,
+    862.0
+   ],
+   "px_per_mm": 1.422
+  },
+  "job_id": "job_b4648b73965f",
+  "status": "complete",
+  "error": null,
+  "seconds": 17.1,
+  "attempts": [
+   {
+    "seed": 1941452613,
+    "edge_alignment": 0.967,
+    "scale": 1.0,
+    "rotation": 0.008,
+    "shift": 0.001
+   }
+  ],
+  "pieces": [
+   {
+    "piece": 0,
+    "mode": "AI image"
+   }
+  ],
+  "note": null
+ },
+ {
+  "photo": "16-hands-holding-brushes-ring",
+  "product": "ring-garnet-cloisonne",
+  "upload_id": "up_f0d5276558c3",
+  "detected": {
+   "finger": "ring finger",
+   "finger_width_px": 42.0
+  },
+  "job_id": "job_dc246d3cc9a4",
+  "status": "complete",
+  "error": null,
+  "seconds": 17.1,
+  "attempts": [
+   {
+    "seed": 133035269,
+    "edge_alignment": 0.951,
+    "scale": 1.0,
+    "rotation": -0.009,
+    "shift": 0.001
+   }
+  ],
+  "pieces": [
+   {
+    "piece": 0,
+    "mode": "AI image"
+   }
+  ],
+  "note": null
+ },
+ {
+  "photo": "02-profile-bw-hair",
+  "product": "ear-granulated-hoop",
+  "upload_id": "up_cd08ba428d9d",
+  "detected": {
+   "ears": "not found; the AI will find the visible ears",
+   "whole_photo": true
+  },
+  "job_id": "job_8bfa7bce965d",
+  "status": "complete",
+  "error": null,
+  "seconds": 24.3,
+  "attempts": [
+   {
+    "seed": 52757101,
+    "edge_alignment": 0.574,
+    "face_alignment": null,
+    "scale": 1.003,
+    "rotation": -0.014,
+    "shift": 0.0
+   }
+  ],
+  "pieces": [
+   {
+    "piece": 0,
+    "mode": "AI image"
+   }
+  ],
+  "note": null
+ },
+ {
+  "photo": "08-profile-lowkey-black",
+  "product": "ear-pearl-enamel",
+  "upload_id": "up_8df1d3e60375",
+  "detected": {
+   "ears": "not found; the AI will find the visible ears",
+   "whole_photo": true
+  },
+  "job_id": "job_a9ffd7e5ae1c",
+  "status": "complete",
+  "error": null,
+  "seconds": 20.2,
+  "attempts": [
+   {
+    "seed": 1750872535,
+    "edge_alignment": 0.848,
+    "face_alignment": null,
+    "scale": 0.999,
+    "rotation": -0.011,
+    "shift": 0.001
+   }
+  ],
+  "pieces": [
+   {
+    "piece": 0,
+    "mode": "AI image"
+   }
+  ],
+  "note": null
+ },
+ {
+  "photo": "09-looking-down-blonde",
+  "product": "ear-garnet-cones",
+  "upload_id": "up_c6fd447e29b9",
+  "detected": {
+   "ears": "not found; the AI will find the visible ears",
+   "whole_photo": true
+  },
+  "job_id": "job_c26da4bda355",
+  "status": "complete",
+  "error": null,
+  "seconds": 24.3,
+  "attempts": [
+   {
+    "seed": 1057658494,
+    "edge_alignment": 0.565,
+    "face_alignment": null,
+    "scale": 1.0,
+    "rotation": 0.002,
+    "shift": 0.0
+   }
+  ],
+  "pieces": [
+   {
+    "piece": 0,
+    "mode": "AI image"
+   }
+  ],
+  "note": null
+ },
+ {
+  "photo": "10-profile-hat-outdoor",
+  "product": "ear-pearl-enamel",
+  "upload_id": "up_a421b4367a85",
+  "detected": {
+   "ears": "not found; the AI will find the visible ears",
+   "whole_photo": true
+  },
+  "job_id": "job_b2ff5db97e50",
+  "status": "complete",
+  "error": null,
+  "seconds": 28.3,
+  "attempts": [
+   {
+    "seed": 594972804,
+    "edge_alignment": 0.955,
+    "face_alignment": null,
+    "scale": 1.0,
+    "rotation": -0.003,
+    "shift": 0.0
+   }
+  ],
+  "pieces": [
+   {
+    "piece": 0,
+    "mode": "AI image"
+   }
+  ],
+  "note": null
+ },
+ {
+  "photo": "12-golden-backlight-tilted",
+  "product": "ear-pearl-enamel",
+  "upload_id": "up_1756814deaf8",
+  "detected": {
+   "ears": [
+    "right ear",
+    "left ear"
+   ],
+   "yaw_deg": -3.2,
+   "view": "front",
+   "px_per_mm": 1.654,
+   "face_height_px": 226
+  },
+  "job_id": "job_5265a1a22467",
+  "status": "complete",
+  "error": null,
+  "seconds": 22.3,
+  "attempts": [
+   {
+    "seed": 1343035723,
+    "edge_alignment": 0.911,
+    "face_alignment": 0.921,
+    "scale": 1.0,
+    "rotation": -0.031,
+    "shift": 0.004
+   }
+  ],
+  "pieces": [
+   {
+    "piece": 0,
+    "mode": "AI image"
+   },
+   {
+    "piece": 1,
+    "mode": "AI image"
+   }
+  ],
+  "note": null
+ },
+ {
+  "photo": "05-looking-down-warm-dark",
+  "product": "ear-granulated-hoop",
+  "upload_id": "up_a61a6674865d",
+  "detected": {
+   "ears": [
+    "left ear"
+   ],
+   "yaw_deg": -42.4,
+   "view": "profile",
+   "px_per_mm": 2.074,
+   "face_height_px": 360
+  },
+  "job_id": "job_d9705bc227f4",
+  "status": "complete",
+  "error": null,
+  "seconds": 67.5,
+  "attempts": [
+   {
+    "seed": 687004182,
+    "edge_alignment": 0.828,
+    "face_alignment": null,
+    "scale": 1.005,
+    "rotation": -0.178,
+    "shift": 0.003
+   }
+  ],
+  "pieces": [
+   {
+    "piece": 0,
+    "mode": "AI image"
+   }
+  ],
+  "note": null
+ },
+ {
+  "photo": "17-hands-makeup-ring",
+  "product": "ring-granulated-bezel",
+  "upload_id": "up_65eef304f548",
+  "detected": {
+   "finger": "not found; the AI will find the ring finger",
+   "whole_photo": true
+  },
+  "job_id": "job_24744e618a68",
+  "status": "complete",
+  "error": null,
+  "seconds": 22.2,
+  "attempts": [
+   {
+    "seed": 1952955001,
+    "edge_alignment": 0.946,
+    "face_alignment": null,
+    "scale": 1.0,
+    "rotation": -0.009,
+    "shift": 0.001
+   }
+  ],
+  "pieces": [
+   {
+    "piece": 0,
+    "mode": "AI image"
+   }
+  ],
+  "note": null
+ }
+]

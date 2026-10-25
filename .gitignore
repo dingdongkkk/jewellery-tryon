@@ -1,0 +1,14 @@
+.venv/
+data/
+backend/.env
+frontend/node_modules/
+frontend/dist/
+__pycache__/
+*.pyc
+.DS_Store
+# local tooling / scratch output
+scratch/
+output/
+.playwright-cli/
+# big generated test artefacts (results.json and the contact sheets are kept)
+test-results/regression/
