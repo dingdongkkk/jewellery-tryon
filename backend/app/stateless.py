@@ -176,7 +176,8 @@ def try_on(body: TryOnBody, x_app_password: str | None = Header(default=None)):
         photo = tmp / "photo.png"
         im.save(photo)
         job = {"id": job_id, "provider": provider, "seed": seed, "placement": body.placement,
-               "settings": {"output_long_side": OUTPUT_LONG_SIDE}}
+               "settings": {"output_long_side": OUTPUT_LONG_SIDE,
+                            "detail_pass": body.settings.get("detail_pass") is True}}
         try:
             r = run_tryon(job, prod, {"original_path": str(photo)}, tmp / "out", lambda s: None)
         except Exception as e:  # the same messages the worker would store on the job
