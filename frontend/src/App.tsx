@@ -9,7 +9,7 @@ const STAGES: { id: Job['status']; label: string }[] = [
   { id: 'queued', label: 'Queued' },
   { id: 'preparing', label: 'Preparing' },
   { id: 'generating', label: 'AI generating' },
-  { id: 'compositing', label: 'Detail-lock composite' },
+  { id: 'compositing', label: 'Finishing image' },
   { id: 'complete', label: 'Done' },
 ]
 
@@ -27,6 +27,9 @@ export default function App() {
   const [occluder, setOccluder] = useState<[number, number][] | undefined>(undefined)
   const userChoseNoAI = useRef(false)
   const [outputSize, setOutputSize] = useState(6144)
+  const [wholePhoto, setWholePhoto] = useState(false)
+  const [faceOval, setFaceOval] = useState<[number, number][] | undefined>(undefined)
+  const [enhanceDetail, setEnhanceDetail] = useState(false)
   const resultRef = useRef<HTMLDivElement>(null)
   const [placing, setPlacing] = useState(false)
   const [aiAvailable, setAiAvailable] = useState(true)
@@ -74,6 +77,8 @@ export default function App() {
         /* keep current provider */
       }
       const r = await api.autoplace(u.id, p.id)
+      setWholePhoto(Boolean(r.whole_photo))
+      setFaceOval(r.face_oval)
       setItems(r.items)
       setChain(r.chain)
       setOccluder(r.occluder)
@@ -84,7 +89,7 @@ export default function App() {
           : p.category === 'pendant'
             ? 'around your neck'
             : 'on your ring finger'
-      setNotice(`Found the spot ${where}. Press “Generate AI try-on”.`)
+      setNotice(r.whole_photo ? 'The AI will use your whole photo to find a natural fit.' : `Found the spot ${where}. Press “Generate AI try-on”.`)
       void prov // generation is started by the "Generate AI try-on" button (each AI image costs money)
     } catch (e) {
       setItems([])
@@ -131,18 +136,7 @@ export default function App() {
             setTimeout(() => resultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100)
           }
           if (j.status === 'quota_exceeded') {
-            // keep going without the AI pass: light-matched composite, instant
-            setAiAvailable(false)
-            setNotice('The AI provider quota or balance is used up. This result uses local lighting instead.')
-            const r = await api.createTryon({
-              upload_id: j.upload_id,
-              product_id: j.product_id,
-              placement: j.placement,
-              provider: 'none',
-              settings: { output_long_side: Number(j.settings.output_long_side ?? 6144) },
-            })
-            setJob(r)
-            startPolling(r.id)
+            setNotice('The AI provider quota or balance is used up. Restore access to generate a realistic worn result.')
           }
         }
       } catch (e) {
@@ -152,11 +146,11 @@ export default function App() {
   }
 
   const tryOn = async (prov = provider, placement?: Placement, u = upload, p = product) => {
-    const pl = placement ?? { items, chain }
+    const pl = placement ?? { items, chain, whole_photo: wholePhoto, face_oval: faceOval }
     if (!u || !p || !pl.items.length) return
     setError(null)
     try {
-      const j = await api.createTryon({ upload_id: u.id, product_id: p.id, placement: pl, provider: prov, settings: { output_long_side: outputSize } })
+      const j = await api.createTryon({ upload_id: u.id, product_id: p.id, placement: pl, provider: prov, settings: { output_long_side: outputSize, detail_pass: enhanceDetail } })
       setJob(j)
       startPolling(j.id)
     } catch (e) {
@@ -195,14 +189,16 @@ export default function App() {
       <header>
         <div>
           <h1>Jewellery Try-On</h1>
-          <p className="sub">Try it on. Look closer. Original jewellery detail, with lighting matched to your photo.</p>
+          <p className="sub">Try it on. Look closer. Naturally worn jewellery, with optional close-up detail enhancement.</p>
         </div>
       </header>
 
       <section className="privacy">
-        <strong>Privacy:</strong> AI lighting sends a close crop around each piece to your selected
-        image service. Local lighting keeps processing on this server. Your photo and results are stored on
-        this server until you delete them. You can delete them at any time with the buttons below.
+        <strong>Privacy:</strong> AI try-on sends your photo or a crop, plus the product reference, to an AI image
+        service.{' '}
+        {import.meta.env.VITE_STATELESS === '1'
+          ? 'Body detection runs in your browser, and nothing is stored on this server: your photo and results stay in this tab until you close it.'
+          : 'Your photo and results are stored on this server until you delete them. You can delete them at any time with the buttons below.'}
       </section>
 
       {error && <div className="error">{error}</div>}
@@ -296,15 +292,19 @@ export default function App() {
             </p>
           )}
 
-          <label className="row">
+          {import.meta.env.VITE_STATELESS !== '1' && <label className="row">
             <span className="label">Export detail</span>
             <select value={outputSize} onChange={(e) => setOutputSize(Number(e.target.value))} disabled={!!running}>
               <option value={4096}>4K · smaller file</option>
               <option value={6144}>6K · detailed (recommended)</option>
               <option value={8192}>8K · maximum detail</option>
             </select>
+          </label>}
+          <label className="row">
+            <span className="label">Enhance jewellery detail</span>
+            <input type="checkbox" checked={enhanceDetail} onChange={(e) => setEnhanceDetail(e.target.checked)} disabled={!!running || !provider.startsWith('fal-nano-banana')} />
           </label>
-          <p className="hint">Jewellery is rendered from the original product photo. Export size is limited by source detail and 64 megapixels; enlarging skin does not add new detail.</p>
+          <p className="hint">Detail enhancement adds an AI close-up pass per detected piece, with extra cost and time. The original fit is kept if the pass moves the jewellery. Export size alone does not add texture.</p>
           <details className="advanced">
             <summary>Advanced</summary>
             <label className="row">
@@ -440,21 +440,15 @@ export default function App() {
                     <figure className="ai-result">
                       <ZoomViewer src={job.assets.ai} alt="AI image of you wearing the piece" />
                       <figcaption>
-                        The AI&rsquo;s own image before texture lock. In &ldquo;You wearing it&rdquo; the AI&rsquo;s drawing of the
-                        piece is replaced by the real product photo (or a sharper AI detail pass), so zooming shows the real
-                        texture.
+                        The naturally worn AI result before optional close-up detail enhancement.
                         {job.timings?.info?.ai_output === 'model framing (not aligned to the photo)' &&
                           ' The AI re-framed this shot, so it is shown as the AI drew it.'}
                       </figcaption>
                     </figure>
                   )}
                   <p className="hint">
-                    The AI put the piece on you (placement, shadows, chain, hair in front); the jewellery pixels then
-                    come from the real product photo{' '}
-                    {(job.timings?.info?.worn as { pieces?: { mode: string }[] } | undefined)?.pieces?.some((p) => p.mode !== 'real product pixels')
-                      ? 'where it matched, and from a high-res AI detail pass elsewhere'
-                      : ''}
-                    . Zoom in to see the texture.
+                    Inspect the jewellery beside the product reference to check stones, metal and engraving.
+                    AI-generated details may differ from the original product. Close-ups show the same pixels as the download.
                   </p>
                   {Boolean(job.timings?.info?.ai_rejected) && (
                     <p className="notice">

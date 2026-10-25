@@ -12,3 +12,4 @@ output/
 .playwright-cli/
 # big generated test artefacts (results.json and the contact sheets are kept)
 test-results/regression/
+.vercel

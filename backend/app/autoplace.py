@@ -48,7 +48,31 @@ def _model(kind):
         return _models[kind]
 
 
+_INJECT = threading.local()
+_INJECT.data = None
+
+
+def _injected(kind):
+    """Landmarks computed elsewhere (in the browser, on the serverless deployment where MediaPipe can't run),
+    shaped like MediaPipe results. Coordinates are normalised to the photo."""
+    from types import SimpleNamespace as NS
+
+    data = _INJECT.data or {}
+    if kind == "face":
+        f = data.get("face")
+        pts = [NS(x=p[0], y=p[1], z=p[2] if len(p) > 2 else 0.0) for p in (f or {}).get("points", [])]
+        return NS(face_landmarks=[pts] if pts else [], facial_transformation_matrixes=[])
+    if kind == "pose":
+        po = data.get("pose")
+        pts = [NS(x=p[0], y=p[1], visibility=p[2] if len(p) > 2 else 1.0) for p in (po or {}).get("points", [])]
+        return NS(pose_landmarks=[pts] if pts else [])
+    hands = [[NS(x=p[0], y=p[1]) for p in h] for h in (data.get("hands") or []) if h]
+    return NS(hand_landmarks=hands)
+
+
 def _detect(kind, im: Image.Image):
+    if getattr(_INJECT, "data", None) is not None:
+        return _injected(kind)
     import mediapipe as mp
 
     small = im.copy()
@@ -98,6 +122,9 @@ def _face(im, with_yaw=False):
     if res.facial_transformation_matrixes:
         R = np.asarray(res.facial_transformation_matrixes[0])[:3, :3]
         yaw = float(np.degrees(np.arctan2(R[0, 2], R[2, 2])))
+    else:  # depth of the two face-contour points at ear level (matches the matrix within a few degrees)
+        a, b = res.face_landmarks[0][234], res.face_landmarks[0][454]
+        yaw = float(np.degrees(np.arctan2((b.z - a.z) * PW, (b.x - a.x) * PW)))
     return f, iris_px / IRIS_MM, fw, yaw
 
 
@@ -154,7 +181,7 @@ def place_earrings(im, product):
             item["occlude"] = {"polygon": oval, "rect": [0, 0, 1, 1], "always": True}
         items.append(item)
         sides.append(name)
-    return {"items": items, "occluder": None if turned else oval,
+    return {"items": items, "occluder": None if turned else oval, "face_oval": oval,
             "detected": {"ears": sides, "yaw_deg": round(yaw, 1), "view": "profile" if turned else "front",
                          "px_per_mm": round(float(ppm), 3), "face_height_px": round(fh)}}
 
@@ -332,10 +359,27 @@ def _plain(v):
     return v
 
 
-def autoplace(image_path, product) -> dict:
+def autoplace(image_path, product, landmarks: dict | None = None) -> dict:
+    """landmarks: optional precomputed results {"face": {"points": [[x,y,z]...]}, "pose": {"points": [[x,y,vis]...]},
+    "hands": [[[x,y]...]...]}, normalised to the photo (used where MediaPipe can't run on the server)."""
     im = ImageOps.exif_transpose(Image.open(image_path)).convert("RGB")
     cat = product["category"]
     fn = {"earring": place_earrings, "pendant": place_pendant, "ring": place_ring}.get(cat)
     if fn is None:
         raise NotFound(f"Automatic placement isn't available for {cat} yet.")
-    return _plain(fn(im, product))
+    _INJECT.data = landmarks
+    try:
+        out = fn(im, product)
+    finally:
+        _INJECT.data = None
+    if cat == "pendant" and "face_oval" not in out:
+        try:  # face outline for the worn check
+            _INJECT.data = landmarks
+            f = _face(im)[0]
+            c = f[FACE_OVAL].mean(0)
+            out["face_oval"] = [[float(v) for v in c + 0.97 * (f[i] - c)] for i in FACE_OVAL]
+        except NotFound:
+            pass
+        finally:
+            _INJECT.data = None
+    return _plain(out)

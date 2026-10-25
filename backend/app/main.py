@@ -136,6 +136,7 @@ class Placement(BaseModel):
     items: list[PlacementItem] = Field(min_length=1, max_length=2)
     chain: Chain | None = None
     whole_photo: bool = False  # no body landmarks found: the AI gets the whole photo and finds the spot itself
+    face_oval: list[list[float]] | None = None  # face outline (photo pixels), for the "did the face change" check
 
 
 class AutoPlaceRequest(BaseModel):
@@ -226,6 +227,8 @@ def create_tryon(req: TryOnRequest):
         jid = new_id("job")
         seed = req.seed if req.seed is not None else random.randint(0, 2**31 - 1)
         settings = {k: v for k, v in req.settings.items() if k in DEFAULT_SETTINGS or k == "context_mode"}
+        if "detail_pass" in settings and not isinstance(settings["detail_pass"], bool):
+            raise HTTPException(422, "Detail enhancement must be true or false.")
         target = settings.get("output_long_side", 6144)
         if isinstance(target, bool) or not isinstance(target, (int, float)) or not 1024 <= target <= 8192:
             raise HTTPException(422, "Output size must be between 1024 and 8192 pixels.")

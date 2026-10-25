@@ -1,0 +1,8 @@
+# Vercel Function dependencies (the serverless API). Local development uses backend/requirements.txt.
+fastapi==0.162.0
+pydantic>=2
+numpy==2.5.4
+opencv-python-headless==5.0.0.93
+pillow==13.0.0
+python-dotenv==1.2.4
+fal-client==1.0.3

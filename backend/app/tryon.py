@@ -25,6 +25,7 @@ HARD_CASE = {
 }
 
 DEFAULT_SETTINGS = {
+    "detail_pass": False,        # opt-in extra AI request per detected piece
     "context_pad": 1.0,          # crop padding as a multiple of the jewellery size
     "relight_strength": 0.55,     # how much of the model's colour cast / shading to apply to the cutout
     "shading_strength": 1.0,     # how much of the model's contact shadows to apply to the skin
@@ -138,16 +139,17 @@ def run_tryon(job: dict, product: dict, upload: dict, out_dir: Path, set_status)
     seed = int(job["seed"])
     ai_draft = img.copy()
     has_draft = False
-    # "worn" mode: the model puts the piece on the person itself, then the real product pixels replace its drawing.
+    # Worn mode preserves the model's natural placement, geometry and occlusion.
     render_items = items
     overlays = []
-    worn_mode = provider is not None and settings.get("mode", "worn" if job["provider"] == "fal-nano-banana" else "lighting") == "worn"
+    worn_mode = provider is not None and settings.get("mode", "worn" if job["provider"] in ("fal-nano-banana", "fal-nano-banana-2") else "lighting") == "worn"
     if worn_mode:
         t = time.time()
         set_status("generating")
         w = None
         try:
             settings["whole_photo"] = bool(job["placement"].get("whole_photo"))
+            settings["face_oval"] = job["placement"].get("face_oval")
             w = generate_worn(img, cut, product, items, aspect, crop, provider, settings, seed, out_dir)
             # Escalation, only when the first result is unusable: one retry with the stronger model (Nano Banana 2,
             # ~$0.08) and an instruction aimed at what went wrong.
@@ -176,7 +178,7 @@ def run_tryon(job: dict, product: dict, upload: dict, out_dir: Path, set_status)
                 base = w["base"]
                 render_items = w["items"]
                 overlays = w["overlays"]
-                piece_boxes = [P.item_bbox(it, aspect) for it in render_items] + [
+                piece_boxes = w.get("piece_boxes") or [P.item_bbox(it, aspect) for it in render_items] + [
                     (x, y, x + s_, y + s_) for (x, y, s_, _) in (o["region"] for o in overlays)]
                 if piece_boxes:
                     boxes = piece_boxes
@@ -366,7 +368,7 @@ def run_tryon(job: dict, product: dict, upload: dict, out_dir: Path, set_status)
             "crop": list(crop),
             "preplaced_preview_size": [sw, sh],
             "tiles": tiles,
-            "context_mode": ("worn" if worn_mode and info.get("worn", {}).get("items")
+            "context_mode": ("worn" if worn_mode and w is not None and w.get("ok")
                              else "shading" if info.get("accepted_lighting_passes") else "none"),
         },
     }

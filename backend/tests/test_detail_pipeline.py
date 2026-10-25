@@ -162,6 +162,47 @@ class DetailPipelineTests(unittest.TestCase):
         self.assertTrue(result['info']['warnings'])
         np.testing.assert_array_equal(actual, baseline)
 
+    def test_worn_result_keeps_generated_pixels_and_detected_crop(self):
+        generated = np.asarray(Image.open(self.root / 'person.png'), dtype=np.float32) / 255
+        generated[80:130, 290:330] = [0.9, 0.65, 0.1]
+        self.job['provider'] = 'fal-nano-banana-2'
+        def worn(*args):
+            crop = args[5]
+            return dict(ok=True, info={'pieces': [{'mode': 'AI image'}]}, ai_full=generated,
+                        base=generated, items=[], overlays=[], piece_boxes=[(290, 80, 330, 130)],
+                        gain_crop=np.ones((crop[3], crop[2], 3), np.float32))
+        with patch('app.tryon.get_provider', return_value=object()), patch('app.tryon.generate_worn', side_effect=worn):
+            result, master = self.run_job()
+        self.assertEqual(result['info']['context_mode'], 'worn')
+        expected = Image.fromarray(np.asarray(P.to_pil(generated))).resize((master.shape[1], master.shape[0]), Image.Resampling.LANCZOS)
+        np.testing.assert_array_equal(master, np.asarray(expected))
+        x, y, w, h = result['info']['tiles'][0]['region']
+        k = result['info']['quality']['export_scale']
+        self.assertAlmostEqual((x + w / 2) / k, 310, delta=2)
+        self.assertAlmostEqual((y + h / 2) / k, 105, delta=2)
+
+    def test_nano_provider_does_not_receive_qwen_options(self):
+        from app.providers.fal import FalProvider
+        for name in ('fal-nano-banana', 'fal-nano-banana-2'):
+            args = FalProvider(name)._arguments(Image.new('RGB', (64, 64)), None, 'test', 1, {})
+            self.assertEqual(args['aspect_ratio'], 'auto')
+            self.assertNotIn('num_inference_steps', args)
+            self.assertNotIn('image_size', args)
+            self.assertEqual('thinking_level' in args, name.endswith('-2'))
+
+    def test_detail_pass_rejects_shifted_jewellery_even_with_sharp_edges(self):
+        from app.worn import detail_pass
+        class Echo:
+            def generate_tryon(self, image, *args):
+                return GenerationResult(image, 1)
+        def moved(crop, output, stats):
+            stats.update(scale=1, rotation=0, shift=0.1)
+            return output, True
+        original = np.asarray(Image.open(self.root / 'person.png'), dtype=np.float32) / 255
+        with patch('app.worn.align_to', side_effect=moved), patch('app.worn.edge_alignment', return_value=1):
+            enhanced, _, _ = detail_pass(Echo(), original, (100, 100, 100, 100), None, 'earring', 1, {})
+        self.assertIsNone(enhanced)
+
 
 if __name__ == '__main__':
     unittest.main()

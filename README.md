@@ -1,6 +1,6 @@
 # Jewellery Try-On
 
-Photo-based earrings, pendants and rings with source-image detail and optional AI lighting.
+Photo-based earrings, pendants and rings with natural AI placement and optional close-up detail enhancement.
 React/Vite frontend, FastAPI API, SQLite queue and a separate Python worker.
 
 ## Run locally
@@ -16,34 +16,23 @@ cp backend/.env.example backend/.env
 
 Open http://localhost:5188. Existing catalogue assets can be reused; catalogue preparation only needs to run when adding products. Restart the worker after Python changes; the API and frontend reload automatically.
 
-Set `HF_TOKEN` for the free Hugging Face Spaces, or `FAL_KEY` for paid fal.ai generation. Keys stay on the backend. With a fal key the existing default is `fal-nano-banana`; select a different provider in Advanced or set `TRYON_PROVIDER`. `none` uses local lighting and makes no inference requests. Free Spaces have queues and quota limits; paid inference is billed per request. **A pair of earrings now uses two close-crop requests, one per piece** (and retries can incur additional usage). No external service is needed for local lighting.
+Set `HF_TOKEN` for the free Hugging Face Spaces, or `FAL_KEY` for paid fal.ai generation. Keys stay on the backend. With a fal key the existing default is `fal-nano-banana`; select a different provider in Advanced or set `TRYON_PROVIDER`. `none` uses local lighting and makes no inference requests. Free Spaces have queues and quota limits; paid inference is billed per request. The worn pipeline uses a context generation, with possible retries, escalation and wornness checks. Optional detail enhancement adds one generation per detected piece. No external service is needed for local lighting.
 
 ## Detail and realism pipeline
 
-1. Preserve the uploaded photo (EXIF corrected, capped at 6000 pixels on its long side). Load the original transparent product cutout, not a thumbnail.
-2. Estimate placement from local MediaPipe landmarks. Review the attachment point and adjust it before generating. Mirrored earrings use mirrored product anchors. Face/finger occlusion masks are included in the render and lighting masks.
-3. Render each piece directly into its own 1024-pixel context crop for the AI lighting pass. This gives a small earring hundreds of model pixels instead of a few dozen in a full portrait. The selected placement is shared by the AI input and final result.
-4. Check global and local alignment of every returned crop. If a model moves the piece or reframes the photograph, retain local lighting for that piece. From accepted crops borrow only smooth relighting and bounded contact darkening. Never paste the AI-redrawn jewellery into the detailed result. A separate AI draft is available for inspection when framing allows it.
-5. Transform the original product texture with premultiplied alpha. An area prefilter handles large reductions; one final affine transform handles placement, mirroring and rotation. Bounded relighting preserves highlight variation rather than clipping bright metal to white. Avoid adding synthetic noise over the jewellery.
-6. Render a single PNG master at the chosen 4K/6K/8K target, bounded by source sampling, 8× enlargement and 64 megapixels. Never reduce an already larger uploaded photo. Rendering uses overlapping strips to keep working memory manageable on a 16 GB Mac.
-7. Show the master in the zoom viewer. “Inspect piece” focuses its actual output pixels; zoom beyond 100% is explicitly labelled as enlargement. Downloads contain the same detail. Close-ups are literal crops of the PNG, not independently sharpened or regenerated views. Before/after uses a smaller preview for speed.
+1. Preserve the uploaded photo and use landmarks to estimate the jewellery region. If detection fails, give the model the whole photo.
+2. Nano Banana receives the untouched person crop and product reference, generating jewellery with natural attachment, perspective, shadows and occlusion. Reject changed framing and failed wornness checks; do not silently substitute a pasted product image.
+3. Preserve the accepted generated jewellery. **Enhance jewellery detail** optionally generates a tight 1024-pixel close-up for each detected piece, using the product reference. Register the close-up and reject it if alignment or geometry changes too much. A failed detail pass keeps the accepted main result.
+4. Blend accepted detail into the master and export a lossless PNG at the selected size, bounded by source sampling and 64 megapixels. Increasing export dimensions alone does not create texture.
+5. Inspection crops follow the detected jewellery location. They are exact crops of the downloadable master, so the preview and download show the same detail.
 
-A 6K portrait is not six thousand pixels of jewellery. Inspect the output metadata to see the rendered width of each piece. Large exports reveal more of the source texture, but cannot recover engraving absent from the product photo or make an unfocused source sharp. Background enlargement is ordinary interpolation; it adds no genuine skin detail.
+AI-generated stones and engraving can differ from the product reference. Compare the close-up against the original product image before using a result as an accurate product representation. Legacy providers and explicit no-AI preview still use the local compositing pipeline.
 
 ## Controls and outputs
 
-Upload a photo, choose a product, check placement, choose export detail, then generate. The initial result is **Detailed result**; **AI draft** is a separate optional tab whose design can differ from the source.
+Upload a photo, choose a product, select optional detail enhancement and export size, then generate. Detail enhancement costs additional AI calls and is off by default.
 
-Each job directory contains:
-
-- `tryon.png`: canonical full-resolution PNG.
-- `preview.jpg`: smaller preview for comparison.
-- `detail_0.png`, `detail_1.png`: exact master crops; `detail.png` aliases the first.
-- `reference.*`: original product photograph.
-- `lighting_input_*.png`, `lighting_output_*.png`: per-piece AI diagnostic crops.
-- `tryon_ai.png`: optional AI draft, not the fidelity-preserving export.
-
-`timings.info.quality` records output/upload/source sizes, scale, jewellery widths, source limits and whether the background was enlarged. `lighting_passes` records crop coordinates and whether each AI pass was accepted. Existing old jobs remain viewable with their legacy tile overlays; regenerate them for a unified detailed PNG.
+Each job directory contains `tryon.png` (the master), `preview.jpg`, exact master crops `detail_0.png` / `detail_1.png`, and the original product reference. `tryon_ai.png` shows the accepted worn result before optional detail enhancement. Diagnostic crops and alignment information record which enhancement passes were accepted. Restart the worker after Python changes.
 
 ## API
 
@@ -96,3 +85,13 @@ the background-removal model. Environment variables / Space secrets:
 
 `scripts/deploy_space.py` uploads the repo to a Hugging Face Docker Space and sets these secrets. The camera button
 needs https, which the Space URL provides. Uploaded photos live in the container and are wiped on restart.
+
+## Deployment (Vercel, serverless)
+
+`vercel.json` deploys a stateless version: the static site plus one Python function (`api/index.py` → `backend/app/stateless.py`).
+MediaPipe can't run inside a Vercel function, so body landmarks are detected in the browser (`frontend/src/landmarks.ts`, same
+models) and sent with the photo. Nothing is stored on the server: the browser keeps the photo, each request carries it, and results
+come back in the response (2560 px JPEG, to fit the 4.5 MB response limit). Built with `VITE_STATELESS=1` (`scripts/vercel_build.sh`).
+
+Set `FAL_KEY` and `APP_PASSWORD` as Vercel environment variables. With `APP_PASSWORD` set, the site asks for the password before
+the first AI request. Differences from the full server: no 6K/8K export, no job history, one request per try-on (max 300 s).

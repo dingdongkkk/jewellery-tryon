@@ -1,13 +1,7 @@
-"""AI-worn try-on with texture lock.
+"""AI-worn try-on preserving generated fit, contact shadows and occlusion.
 
-1. The model (Nano Banana) gets the untouched photo crop plus the product photo and puts the piece on the person
-   itself: on the visible ear, chain around the neck, ring around the finger, with its own light and shadows.
-2. We find where it drew the jewellery (difference from the original crop), fit the real product cutout to each
-   drawn piece (position, size, angle, mirror) and replace the model's drawing with the real pixels, relit with the
-   model's lighting. Leftover model jewellery outside the real cutout is cleaned back to the original photo.
-
-The result looks worn (the model decided the pose-correct placement and occlusion) and keeps the product's real
-texture when zoomed (the jewellery pixels come from the high-res product photo).
+Optional registered close-up generation enhances each detected piece. It does not
+paste the flat product cutout back over the naturally worn jewellery.
 """
 from __future__ import annotations
 
@@ -97,17 +91,22 @@ def _edges(x: np.ndarray) -> np.ndarray:
     return np.hypot(cv2.Sobel(L, cv2.CV_32F, 1, 0), cv2.Sobel(L, cv2.CV_32F, 0, 1))
 
 
-def face_alignment(ref: np.ndarray, gen: np.ndarray) -> float | None:
+def face_alignment(ref: np.ndarray, gen: np.ndarray, oval: np.ndarray | None = None) -> float | None:
     """Edge correlation inside the face only (eyes, nose, mouth). Hair the model redraws or earrings it swaps
-    don't count; a turned or moved face does. None when no face is found."""
-    from .autoplace import FACE_OVAL, _detect, _pts
+    don't count; a turned or moved face does. oval: the face outline in ref's pixels if already known (from
+    the placement step); otherwise it is detected here. None when no face is found."""
+    if oval is None:
+        try:
+            from .autoplace import FACE_OVAL, _detect, _pts
 
-    res = _detect("face", P.to_pil(ref))
-    if not res.face_landmarks:
-        return None
-    f = _pts(res.face_landmarks[0], ref.shape[1], ref.shape[0])
+            res = _detect("face", P.to_pil(ref))
+        except ImportError:  # no MediaPipe on this server
+            return None
+        if not res.face_landmarks:
+            return None
+        oval = _pts(res.face_landmarks[0], ref.shape[1], ref.shape[0])[FACE_OVAL]
     m = np.zeros(ref.shape[:2], np.uint8)
-    cv2.fillPoly(m, [f[FACE_OVAL].astype(np.int32)], 1)
+    cv2.fillPoly(m, [np.asarray(oval).astype(np.int32)], 1)
     m = cv2.erode(m, np.ones((9, 9), np.uint8))
     if m.sum() < 500:
         return None
@@ -210,6 +209,9 @@ def generate_worn(img, cut, product, hint_items, aspect, crop, provider, setting
         prompt = prompt + " " + settings["hard_case"]
     info = {"prompt": prompt, "attempts": []}
     gen = None
+    oval_small = None
+    if settings.get("face_oval"):  # known face outline (photo pixels) -> model-crop pixels
+        oval_small = (np.asarray(settings["face_oval"], np.float32) - [cx, cy]) * q
     for attempt in range(int(settings.get("worn_attempts", 1))):  # each attempt is a paid call
         res = provider.generate_tryon(P.to_pil(small), ref, prompt, seed + 1000 * attempt, settings)
         tag = "esc_" if settings.get("hard_case") else ""  # escalation keeps the first attempt's image too
@@ -218,7 +220,7 @@ def generate_worn(img, cut, product, hint_items, aspect, crop, provider, setting
         st = {}
         cand, registered = align_to(small, cand, st)
         edge = edge_alignment(small, cand)
-        face = face_alignment(small, cand)
+        face = face_alignment(small, cand, oval_small)
         a = {"seed": res.seed, "edge_alignment": round(edge, 3), "face_alignment": None if face is None else round(face, 3),
              **{k: round(v, 3) for k, v in st.items()}}
         info["attempts"].append(a)
@@ -341,5 +343,12 @@ def generate_worn(img, cut, product, hint_items, aspect, crop, provider, setting
                         "detail_scale": round(mw / side, 2)})
     info["pieces"] = details
     info["model_crop"] = [cx, cy, cw, chh]
-    return {"ok": True, "info": info, "ai_full": ai_full, "base": ai_full, "items": [],
+    # Use detected geometry for inspection, not the original landmark guess.
+    mh, mw = small.shape[:2]
+    piece_boxes = [(cx + x * cw / mw, cy + y * chh / mh,
+                    cx + (x + bw) * cw / mw, cy + (y + bh) * chh / mh)
+                   for x, y, bw, bh in (c["bbox"] for c in comps)]
+    if not piece_boxes:
+        piece_boxes = [(cx, cy, cx + cw, cy + chh)]
+    return {"ok": True, "info": info, "ai_full": ai_full, "base": ai_full, "items": [], "piece_boxes": piece_boxes,
             "gain_crop": np.ones((out_crop[3], out_crop[2], 3), np.float32), "overlays": overlays}

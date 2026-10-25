@@ -98,8 +98,8 @@ class FalProvider:
                 "output_format": "png", "sync_mode": True}
         if self.name in ("fal-nano-banana", "fal-nano-banana-2"):
             args["aspect_ratio"] = aspect or "auto"
-        if self.name == "fal-nano-banana-2":
-            args["thinking_level"] = "high"  # follows tricky instructions (palm-up hands, hidden ears) better
+            if self.name == "fal-nano-banana-2":
+                args["thinking_level"] = "high"  # follows tricky instructions (palm-up hands, hidden ears) better
         else:
             w, h = person_image.size
             args.update({
