@@ -1,0 +1,14 @@
+.venv
+data
+backend/.env
+.env
+frontend/node_modules
+frontend/dist
+**/__pycache__
+scratch
+output
+.playwright-cli
+test-photos
+test-results
+backend/tests
+Dockerfile
